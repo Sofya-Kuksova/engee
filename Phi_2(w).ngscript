@@ -1,0 +1,33 @@
+using Plots
+# Определяем кусочно-заданную функцию Φ(w)
+function Phi(w)
+     ω_threshold = (2*sqrt(2))/3  # Пороговое значение, примерно 0.9428
+     if w <= ω_threshold
+         return -atan(tan(10*w)) - atan((3*w) / (2 - 2.25*w^2))
+     else
+         return -atan(tan(10*w)) - π - atan((3*w) / (2 - 2.25*w^2))
+     end
+ end
+ 
+ # Задаём диапазон ω для построения графика (от 0 до π)
+ w = range(0, stop=π, length=2000)
+ 
+ # Вычисляем значения функции Φ(w)
+ Phi_values = [Phi(x) for x in w]
+ 
+ # Определяем значения и подписи для отметок по оси y
+ ytick_values = [-π, -π/2, -π/4, 0, π/4, π/2, π]
+ ytick_labels = ["-π", "-π/2", "-π/4", "0", "π/4", "π/2", "π"]
+ 
+ # Строим график
+ plot(w, Phi_values,
+     label = "Φ₂(w)",
+     xlabel = "ω, c⁻¹",
+     ylabel = "Φ₂(w)",
+     title = "Φ₂(w)",
+     legend = :topright,
+     yticks = (ytick_values, ytick_labels),
+     grid = true)
+ 
+ # Сохраняем график в файл "Phi_w.png"
+ savefig("Phi_2(w).png")
