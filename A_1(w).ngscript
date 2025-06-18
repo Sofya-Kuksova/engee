@@ -1,0 +1,53 @@
+using Plots
+# Определяем функцию A₁(ω)
+A1(ω) = abs((40 * pi) / (-400 * ω^2 + pi^2) * cos(10 * ω))
+
+# Диапазон значений ω
+ω = range(-1, stop=2pi, length=10000)
+A_vals = A1.(ω)
+
+# Значение в ω = 0 (максимум)
+w0 = 0
+y0 = A1(w0)
+
+# Уровень горизонтальной линии: 0.1 * максимум
+line_level = 0.1 * y0
+line_label = "A₁(ω) = 0.1·A₁(ω)₍ₘₐₓ₎"
+
+# Попытка найти первую точку (с увеличенным допуском)
+idx1 = findfirst(abs.(A_vals .- line_level) .< 0.05)
+
+# Если нашли первую точку, ищем вторую
+if idx1 !== nothing
+    idx2 = findnext(abs.(A_vals .- line_level) .< 0.05, idx1 + 50)
+else
+    error("Не удалось найти первую точку пересечения. Попробуйте изменить допуск.")
+end
+
+# Получаем координаты пересечения
+w_cross2 = ω[idx2]
+y_cross2 = A_vals[idx2]
+
+# Строим график
+plot(ω, A_vals,
+     label = "A₁(ω)",
+     xlabel = "ω, c^-1",
+     ylabel = "A₁(ω)",
+     title = "A₁(ω)",
+     legend = :topright,
+     grid = true,
+     linewidth = 2,
+     xlim = (-0.1, 2),
+     xticks = -0.1:0.2:2)
+
+# Отметка максимума
+scatter!([w0], [y0], label = "A₁(ω)₍ₘₐₓ₎ = $(round(y0, digits=3))", markersize = 4, color = :grey)
+
+# Горизонтальная пунктирная линия
+hline!([line_level], linestyle = :dash, color = :red, label = line_label)
+
+# Вертикальная пунктирная линия через вторую точку пересечения
+vline!([w_cross2], linestyle = :dot, color = :green, label = "\\Delta\\omega_1 = 0.409")
+
+# Сохраняем график
+savefig("A_1(w).png")
