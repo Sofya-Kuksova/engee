@@ -1,0 +1,21 @@
+using Plots
+# Определяем функцию Φ₁(ω)
+phi1(ω) = -atan(tan(10 * ω))
+
+# Задаём диапазон ω (только для ω >= 0)
+ω = range(0, stop=pi, length=2000)
+
+# Определяем значения и подписи для yticks
+ytick_values = [-pi, -pi/2, -pi/4 ,0, pi/4 ,pi/2, pi]
+ytick_labels = ["-π", "-π/2","-π/4" , "0","π/4" ,"π/2", "π"]
+
+# Строим график
+plot(ω, phi1.(ω),
+     label="Φ₁(ω)",
+     xlabel = "ω, c^-1",
+     ylabel = "Φ₁(ω)",
+     title = "Φ₁(ω)",
+     legend=:topright,
+     yticks = (ytick_values, ytick_labels),
+     grid = true)
+savefig("Phi_1(w).png")
