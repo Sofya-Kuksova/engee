@@ -1,0 +1,63 @@
+using Plots    
+# Определение передаточной функции
+H(ω) = 1 / (-2.25 * ω^2 + 3im * ω + 2)
+
+# Генерация диапазона частот (логарифмический масштаб)
+ω_range = exp10.(LinRange(-2, 2, 1000))
+
+# Вычисление значений АФЧХ
+H_values = H.(ω_range)
+
+# Разделение на действительную и мнимую части
+re_H = real.(H_values)
+im_H = imag.(H_values)
+
+# Построение графика
+plot(re_H, im_H, 
+    label="АФХ", 
+    xlabel="Re(H)", 
+    ylabel="Im(H)", 
+    title="АФХ",
+    aspect_ratio=:equal,
+    grid=true,
+    legend=:bottomright)
+
+# Добавление стрелок направления
+arrows_indices = [250, 500, 750]
+for i in arrows_indices
+    x, y = re_H[i], im_H[i]
+    dx = re_H[i+1] - x
+    dy = im_H[i+1] - y
+    plot!([x, x + dx/10], [y, y + dy/10], 
+        arrow=:closed, 
+        color=:black, 
+        label=false)
+end
+
+# Добавление подписей крайних точек
+annotate!(
+    [(0.5, 0, text("ω=0", :bottom, 10)),
+     (0, 0.015, text("ω→∞", :left, 10))]
+)
+
+# Пунктирные линии до оси абсцисс
+hline!([0], 
+    linestyle=:dash, 
+    color=:gray, 
+    label=false,
+    linewidth=1)
+
+# Вертикальные пунктиры для крайних точек
+vline!([0.5, 0], 
+    linestyle=:dash, 
+    color=:gray, 
+    label=false,
+    linewidth=1)
+
+# Отметки на оси абсцисс
+scatter!([0.5, 0], [0, 0], 
+    marker=:circle, 
+    color=:red, 
+    label="ω=0, ω→∞")
+
+savefig("APhH.png")
