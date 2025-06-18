@@ -1,0 +1,20 @@
+using Plots
+# Данные
+k    = [0, 1, 2, 3]
+U2k  = [0.31831, 0.24985, 0.10545, 0]
+
+# Построение графика
+plot(k, U2k;
+    seriestype  = :stem,
+    marker      = :circle,
+    markercolor = :blue,
+    linecolor   = :blue,
+    xlabel      = "k",
+    ylabel      = "|U₂ₖ|",
+    legend      = false,
+    grid        = true
+)
+
+# Сохранение графика
+savefig("amplitude_spectrum_out.png")
+
