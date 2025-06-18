@@ -1,0 +1,58 @@
+# Параметры системы
+R1 = 1.0
+R2 = 1.0
+C = 1.5
+L = 1.5
+
+# Функция входного напряжения u1(t)
+function u1(t, ε=0.01)
+    sinusoidal = sin((π / 20) * t)
+    delta_approx = (20 - ε / 2 <= t <= 20 + ε / 2) ? 1 / ε : 0
+    return sinusoidal + sinusoidal * delta_approx
+end
+
+# Система дифференциальных уравнений
+function derivatives(t, u_C, i_L)
+    duC_dt = (u1(t) - u_C - i_L) / C
+    diL_dt = (u_C - i_L * R2) / L
+    return duC_dt, diL_dt
+end
+
+# Метод Рунге-Кутты 4-го порядка
+function runge_kutta_4th_order(u_C, i_L, t, h)
+    k1_uC, k1_iL = derivatives(t, u_C, i_L)
+    k2_uC, k2_iL = derivatives(t + 0.5*h, u_C + 0.5*h*k1_uC, i_L + 0.5*h*k1_iL)
+    k3_uC, k3_iL = derivatives(t + 0.5*h, u_C + 0.5*h*k2_uC, i_L + 0.5*h*k2_iL)
+    k4_uC, k4_iL = derivatives(t + h, u_C + h*k3_uC, i_L + h*k3_iL)
+    
+    u_C_next = u_C + (h/6)*(k1_uC + 2*k2_uC + 2*k3_uC + k4_uC)
+    i_L_next = i_L + (h/6)*(k1_iL + 2*k2_iL + 2*k3_iL + k4_iL)
+    
+    return u_C_next, i_L_next
+end
+
+# Параметры симуляции
+h = 0.01  # Шаг времени
+t_max = 40  # Общее время симуляции
+
+# Инициализация переменных
+times = 0:h:t_max
+u_C_values = zeros(length(times))
+i_L_values = zeros(length(times))
+u2_values = zeros(length(times))
+
+u_C = 0.0  # Начальное напряжение на конденсаторе
+i_L = 0.0  # Начальный ток через индуктивность
+
+# Запуск симуляции
+for (idx, t) in enumerate(times)
+    u_C_values[idx] = u_C
+    i_L_values[idx] = i_L
+    u2_values[idx] = R2 * i_L
+    
+    u_C, i_L = runge_kutta_4th_order(u_C, i_L, t, h)
+end
+
+# Построение графика
+plot(times, u2_values, label="u₂(t) - Напряжение на R₂", xlabel="Время (с)", ylabel="Напряжение (В)", title="u₂(t)", xlim=(0, 40), ylim=(0, 1), legend=:topright, grid=true)
+savefig("u_2.png")
