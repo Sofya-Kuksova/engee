@@ -1,0 +1,50 @@
+using Plots
+# Определяем кусочно-заданную функцию Φ(ω)
+function Phi(w)
+    ω_threshold = 2*sqrt(2)/3  # Точный порог (примерно 0.9428)
+    if w <= ω_threshold
+        return -atan((3*w) / (2 - 2.25*w^2))
+    else
+        return -π - atan((3*w) / (2 - 2.25*w^2))
+    end
+end
+
+# Задаём параметры построения
+ω_min = 0.0
+ω_threshold = 2*sqrt(2)/3    # ≈ 0.9428
+ε = 1e-3                   # Маленькая величина, чтобы избежать точки скачка
+
+# Генерируем значения для первого участка: ω ∈ [0, 2√2/3 - ε]
+ω_values1 = range(ω_min, stop=ω_threshold - ε, length=1000)
+Phi_values1 = [ -atan((3*w) / (2 - 2.25*w^2)) for w in ω_values1 ]
+
+# Для второго участка выберем немного расширенный диапазон: ω ∈ [2√2/3 + ε, ω_max],
+# где ω_max зададим так, чтобы график выглядел гармонично (например, ω_max = 1.2)
+ω_max = 8
+ω_values2 = range(ω_threshold + ε, stop=ω_max, length=1000)
+Phi_values2 = [ -π - atan((3*w) / (2 - 2.25*w^2)) for w in ω_values2 ]
+
+# Построение графика первого участка с основными настройками оформления
+plot(ω_values1, Phi_values1,
+    label="ФЧХ, ω ∈ [0, 2√2/3]",
+    xlabel="ω, c^-1",
+    ylabel="Φ(ω)",
+    title="ФЧХ",
+    legend=:topright,
+    grid=true,
+    linewidth=2,
+    xlim=(0, ω_max))
+
+# Добавляем на тот же график второй участок другим цветом (например, красным)
+plot!(ω_values2, Phi_values2,
+    label="ФЧХ, ω > 2√2/3",
+    linewidth=2,
+    color=:red)
+
+# Настраиваем отметки по оси y (в терминах π)
+yticks = [-π/2, -π/4, 0]
+ytick_labels = ["-π/2", "-π/4", "0"]
+plot!(yticks=(yticks, ytick_labels))
+
+# Сохраняем график в файл "PhСhH.png"
+savefig("PhСhH.png")
