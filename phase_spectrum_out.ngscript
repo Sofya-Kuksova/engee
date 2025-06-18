@@ -1,0 +1,21 @@
+using Plots
+
+k      = [0, 1, 2, 3]
+alpha2 = [0.0, -1.80986, -3.62899, -5.46749]
+
+plot(k, alpha2;
+    seriestype = :stem,
+    marker     = :circle,
+    markercolor= :red,
+    linecolor  = :red,
+    xlabel     = "k",
+    ylabel     = "α₂ₖ",
+    legend     = false,
+    grid       = true,
+    # Задаём yticks и подтягиваем ylims, чтобы -2π точно попало в область:
+    yticks     = (-2*pi : pi/2 : 0,
+                  ["-2π","-3π/2","-π","-π/2","0"]),
+    ylims      = (-2*pi, 0)
+)
+
+savefig("phase_spectrum_out.png")
